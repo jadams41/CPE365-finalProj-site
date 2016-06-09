@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ethan's Typing Game</title>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.min.js"></script>
+
+    <script src="script.js"></script>
+    <script src="Chart.js"></script>
+    <script src="angular-chart.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="angular-chart.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Oxygen+Mono" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" href="keyboard.ico">
+</head>
+<body ng-app="typingApp" ng-controller="typingController" key-press key-down>
+
+    <h1>Welcome to Ethan's typing practice game!</h1>
+
+    <div ng-if="userPrompt" class="userPrompt">
+        Who are you?
+        <input type="text" ng-model="user.newName">
+        <button type="submit" ng-click="submit()">done</button>
+    </div>
+
+    <holder ng-if="!userPrompt">
+        <h3 style="color: white">You are typing as: {{user.name}} <button ng-click="change()">change</button></h3>
+        <h4>You are typing a quote from {{author}}</h4>
+	<h4>The difficulty of this quote is: {{curDiff}}</h4>
+        <div class="typing-zone" ng-if="!complete">
+            <span  ng-repeat="letter in arr" ng-class="{'prompt': letter.prompted, 'correctlyTyped': letter.typedCorrectly, 'incorrectlyTyped': letter.typedIncorrectly}">{{letter.character}}</span>
+        </div>
+        <div class="finish-message" ng-if="complete">
+            <h4>You just typed {{rawScore}} wpm (raw)or {{correctedScore}} wpm (error corrected)</h4>
+            <button ng-click="getStats()">See stats for {{user.name}}</button>
+        </div>
+    </holder>
+    <div class="typing-zone">
+      name: <input ng-model="user.name">
+    </holder>
+    <div class="typing-zone" ng-if="stats.visible">
+        <canvas id="line" class="chart chart-line" chart-data="stats.graph.wpms"
+                chart-labels="stats.graph.labels" chart-legend="true" chart-series="stats.graph.series"
+                chart-click="onClick" >
+        </canvas>
+    </div>
+
+</body>
+</html>

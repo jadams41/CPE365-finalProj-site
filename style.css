@@ -1,0 +1,59 @@
+body {
+    background-image: url('Space.tga_.jpg');
+    background-repeat: repeat;
+    font-family: 'Oxygen Mono', seif;
+}
+
+h1 {
+    color: white;
+}
+
+h4 {
+    color: white;
+}
+
+.userPrompt {
+    margin-left: 20%;
+    width:60%;
+    background-color:rgba(217,217,217, .8);
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 18px;
+}
+
+.prompt {
+    background-color: lightblue;
+}
+
+.correctlyTyped {
+    color: green
+}
+
+.incorrectlyTyped {
+    color: red;
+    background-color: lightpink;
+}
+
+.typing-zone {
+    margin-left: 20%;
+    width:60%;
+    background-color:rgba(217,217,217, .8);
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 18px;
+}
+
+.finish-message {
+    margin-left: 20%;
+    width:60%;
+    background-color:rgba(217,217,217, .8);
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 18px;
+    color: black;
+}
+
+.finish-message h4 {
+    color: black;
+    text-align: center;
+}
