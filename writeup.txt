@@ -1,0 +1,10 @@
+Ethan Adams - jadams30
+
+Database schema
+	 There are two tables in the database. The quotes table contains the quote string, author of the quote, and the difficulty of the quote. The second table contains records for the speed and accuracy of the quotes typed by users. This table contains the users name, difficulty of the quote typed, and the time that it was completed.
+
+Application database interaction
+	    The application interacts with the database by grabbing a quote based on the current difficulty level selected by the user. Upon the completion of the typing of the quote, the application posts the record information to the server where it is stored in the table. The user can retrieve their stats which generates a graph based on all of their previous entries in the records table.
+
+Database operations
+	 The most common operations are to get 1 random quote from the quotes table, to post the results of typing a quote to the records table, and to get all of the records associated with the current user.
