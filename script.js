@@ -12,6 +12,8 @@ app.controller('typingController', function($scope, $interval, $http) {
         newName: ""
     };
 
+    $scope.curQuoteId = "";
+
     $scope.difficultyLevel = "All";
     $scope.curDiff = "";
 
@@ -21,7 +23,9 @@ app.controller('typingController', function($scope, $interval, $http) {
             series: ['Raw', 'Corrected'],
             wpms: [[],[]]
         },
-        visible: false
+        visible: false,
+	filter: "All",
+	records: []
     };
 
     if(localStorage.getItem('user') && localStorage.getItem('user') == "undefined"){
@@ -42,6 +46,7 @@ app.controller('typingController', function($scope, $interval, $http) {
     }
 
     $scope.change = function(){
+	$scope.stats.visible = false;
         $scope.user.newName = "";
         localStorage.removeItem('user');
         $scope.user.name = "";
@@ -56,6 +61,9 @@ app.controller('typingController', function($scope, $interval, $http) {
     $scope.begin = undefined;
 
     function loadStrIntoArr(str){
+	$scope.arrPosition = 0;
+	$scope.complete = false;
+	$scope.begin = undefined;
         $scope.arr = [];
         for(var i = 0; i < str.length; i++){
             $scope.arr.push({
@@ -67,10 +75,6 @@ app.controller('typingController', function($scope, $interval, $http) {
         }
         $scope.arr[0].prompted = true;
     }
-
-    $scope.arrPosition = 0;
-
-    $scope.complete = false;
 
     $scope.done = function(){
         var end = new Date();
@@ -108,29 +112,86 @@ app.controller('typingController', function($scope, $interval, $http) {
 
     };
 
-    $http.get("http://52.36.156.222:8080/")
-        .then(function(response){
-            console.log(response);
-            loadStrIntoArr(response.data.quote);//$scope.typingString);
-            $scope.author = response.data.author;
-	    $scope.curDiff = response.data.difficulty;
+    $scope.getQuote = function(){
+	var query = "http://52.36.156.222:8080/quote";
+	if($scope.difficultyLevel != 'All'){
+	    query += "?difficulty=" + $scope.difficultyLevel;
+	}
+	if($scope.curQuoteId){
+	    query+= "&not=" + $scope.curQuoteId;
+	}
+	$http.get(query)
+            .then(function(response){
+		console.log(response);
+		loadStrIntoArr(response.data.quote);//$scope.typingString);
+		$scope.author = response.data.author;
+		$scope.curDiff = response.data.difficulty;
+		$scope.stats.visible = false;
+		$scope.curQuoteId = response.data.id;
+		console.log("Current quote: " + $scope.curQuoteId);
+	    })
+    }
+    $scope.getQuote();
+
+    $scope.setDifficultyLevel = function(level){
+	$scope.difficultyLevel = level;
+	if($scope.difficultyLevel != $scope.curDiff){
+	    $scope.getQuote();
+	}
+    }
+
+    $scope.filterStats = function(level){
+	$scope.stats.graph.labels = [];
+        $scope.stats.graph.wpms = [[],[]];
+        $scope.stats.records.forEach(function(row){
+	    console.log(row.difficulty);
+	    if(level == 'All' || row.difficulty == level.toLowerCase()){
+		$scope.stats.graph.wpms[0].push(row.rawWpm);
+		$scope.stats.graph.wpms[1].push(row.correctedWpm);
+		$scope.stats.graph.labels.push("");
+	    }
         })
+	$scope.stats.filter = level;
+    }
 
     $scope.getStats = function(){
-        $http.get('http://52.36.156.222:8080/stats?user=' + $scope.user.name)
-            .then(function(response){
-                console.log(response.data);
-                arr = response.data;
+	if($scope.stats.visible){
+	    $scope.stats.visible = false;
+	    $scope.stats.graph.wpms = [[],[]];
+	    $scope.stats.graph.labels = [];
+	    $scope.stats.filter = "All";
+	}
 
-                $scope.stats.graph.labels = [];
-                $scope.stats.graph.wpms = [[],[]];
-                arr.forEach(function(row){
-                    $scope.stats.graph.wpms[0].push(row.rawWpm);
-                    $scope.stats.graph.wpms[1].push(row.correctedWpm);
-                    $scope.stats.graph.labels.push("");
-                })
-                $scope.stats.visible = true;
-            })
+	else {
+            $http.get('http://52.36.156.222:8080/stats?user=' + $scope.user.name)
+		.then(function(response){
+                    console.log(response.data);
+                    arr = response.data;
+		    
+                    $scope.stats.graph.labels = [];
+                    $scope.stats.graph.wpms = [[],[]];
+                    arr.forEach(function(row){
+			$scope.stats.graph.wpms[0].push(row.rawWpm);
+			$scope.stats.graph.wpms[1].push(row.correctedWpm);
+			$scope.stats.graph.labels.push("");
+                    })
+                    $scope.stats.visible = true;
+
+		    $scope.stats.records = response.data;
+
+		    /*var modalInstance = $uibModal.open({
+		      animation: true,
+		      templateUrl: 'myModalContent.html',
+		      controller: '',//'ModalInstanceCtrl',
+		      size: undefined,
+		      resolve: {
+		      //items: function () {
+		      //    return s$scope.items;
+		      //}
+		      }
+		      });*/
+		})
+	}
     }
 });
 

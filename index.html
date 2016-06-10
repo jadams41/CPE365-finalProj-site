@@ -1,49 +1,63 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Ethan's Typing Game</title>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.min.js"></script>
 
-    <script src="script.js"></script>
     <script src="Chart.js"></script>
     <script src="angular-chart.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.js"></script>
+    <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-1.3.3.js"></script>
+    <script src="script.js"></script>
 
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="angular-chart.css">
     <link rel="stylesheet" type="text/css" href="style.css">
     <link href="https://fonts.googleapis.com/css?family=Oxygen+Mono" rel="stylesheet" type="text/css">
     <link rel="shortcut icon" href="keyboard.ico">
-</head>
-<body ng-app="typingApp" ng-controller="typingController" key-press key-down>
-
+  </head>
+  <body ng-app="typingApp" ng-controller="typingController" key-press key-down>
     <h1>Welcome to Ethan's typing practice game!</h1>
 
     <div ng-if="userPrompt" class="userPrompt">
-        Who are you?
-        <input type="text" ng-model="user.newName">
-        <button type="submit" ng-click="submit()">done</button>
+      Who are you?
+      <input type="text" ng-model="user.newName">
+      <button class="btn btn-default" type="submit" ng-click="submit()">done</button>
     </div>
 
     <holder ng-if="!userPrompt">
-        <h3 style="color: white">You are typing as: {{user.name}} <button ng-click="change()">change</button></h3>
-        <h4>You are typing a quote from {{author}}</h4>
-	<h4>The difficulty of this quote is: {{curDiff}}</h4>
-        <div class="typing-zone" ng-if="!complete">
-            <span  ng-repeat="letter in arr" ng-class="{'prompt': letter.prompted, 'correctlyTyped': letter.typedCorrectly, 'incorrectlyTyped': letter.typedIncorrectly}">{{letter.character}}</span>
-        </div>
-        <div class="finish-message" ng-if="complete">
-            <h4>You just typed {{rawScore}} wpm (raw)or {{correctedScore}} wpm (error corrected)</h4>
-            <button ng-click="getStats()">See stats for {{user.name}}</button>
-        </div>
+      <h3 style="color: white">You are typing as: {{user.name}} <button class="btn btn-default" ng-click="change()">change</button></h3>
+      <h3 style="color: white">Difficulty level:
+      <holder class="btn-group">
+        <label ng-disabled='difficultyLevel == "All"' class="btn btn-primary" ng-click="setDifficultyLevel('All')">All</label>
+        <label ng-disabled='difficultyLevel == "Easy"' class="btn btn-primary" ng-click="setDifficultyLevel('Easy')">Easy</label>
+        <label ng-disabled='difficultyLevel == "Intermediate"' class="btn btn-primary" ng-click="setDifficultyLevel('Intermediate')">Intermediate</label>
+        <label  ng-disabled='difficultyLevel == "Hard"' class="btn btn-primary" ng-click="setDifficultyLevel('Hard')">Hard</label>
+      </holder>
+</h3>
+      <div style="background-color: rgba(159, 253, 247, .7); border-radius: 4px 4px 0 0; padding: 5px;  width: 60%; margin-left: 20%">
+	<h4 style="margin: 0; color: black">You are typing a quote from {{author}}. The difficulty of this quote is: {{curDiff}} <button class="btn btn-default" ng-click="getQuote()">Type a different quote</button></h4>
+      </div>
+      <div class="typing-zone" ng-if="!complete">
+        <span  ng-repeat="letter in arr" ng-class="{'prompt': letter.prompted, 'correctlyTyped': letter.typedCorrectly, 'incorrectlyTyped': letter.typedIncorrectly}">{{letter.character}}</span>
+      </div>
+      <div class="finish-message" ng-if="complete">
+        <h4>You just typed {{rawScore}} wpm (raw) or {{correctedScore}} wpm (error corrected)</h4>
+        <button class="btn btn-default" style="width:100%" ng-click="getStats()">{{!stats.visible ? "See stats for " + user.name : "Hide stats" }}</button>
+      </div>
     </holder>
-    <div class="typing-zone">
-      name: <input ng-model="user.name">
-    </holder>
-    <div class="typing-zone" ng-if="stats.visible">
-        <canvas id="line" class="chart chart-line" chart-data="stats.graph.wpms"
-                chart-labels="stats.graph.labels" chart-legend="true" chart-series="stats.graph.series"
-                chart-click="onClick" >
-        </canvas>
+    <div class="typing-zone" ng-if="stats.visible" style="top:-5px">
+      <div class="btn-group" style="width: 100%">
+        <label style="width: 25%" ng-disabled='stats.filter == "All"' class="btn btn-primary" ng-click="filterStats('All')">All</label>
+        <label style="width: 25%" ng-disabled='stats.filter == "Easy"' class="btn btn-primary" ng-click="filterStats('Easy')">Easy</label>
+        <label style="width: 25%" ng-disabled='stats.filter == "Intermediate"' class="btn btn-primary" ng-click="filterStats('Intermediate')">Intermediate</label>
+        <label style="width: 25%" ng-disabled='stats.filter == "Hard"' class="btn btn-primary" ng-click="filterStats('Hard')">Hard</label>
+      </div>
+      <canvas id="line" class="chart chart-line" chart-data="stats.graph.wpms"
+              chart-labels="stats.graph.labels" chart-legend="true" chart-series="stats.graph.series"
+              chart-click="onClick" >
+      </canvas>
     </div>
 
-</body>
+  </body>
 </html>
